@@ -40,6 +40,14 @@ public class Wypozyczalnia {
         }
     }
 
+    public void dodajSamochod(Samochod samochod) {
+        if (!pojazdy.containsKey(samochod.getNumerRejestracyjny())) {
+            pojazdy.put(samochod.getNumerRejestracyjny(), samochod);
+        }
+    }
+
+
+
     public List<Samochod> zwrocListe() {
         return new ArrayList<>(pojazdy.values());
     }
@@ -81,10 +89,13 @@ public class Wypozyczalnia {
     //  - implementujemy parser
     //  - w parser użytkownik wpisuje komende ktora odpowiada za wyswietlanie listy dostepnych samochodów
     //  - lista jest zwracana z użyciem metody: zwrocListeDostepnych() i w pętli (lub nie) wyświetlana w parserze
-    public Optional<Double> sprawdzCeneSamochodu(String rejestracja, int liczbaDni) {
+    public Optional<Double> sprawdzCeneSamochodu(String rejestracja, int liczbaDni/*, int cenaDodatkowa*/) {
         Optional<Samochod> optSamochod = znajdzSamochod(rejestracja);
         if (optSamochod.isPresent()) {
             Samochod samochod = optSamochod.get();
+            if (samochod.getStatus() != StatusSamochodu.DOSTEPNY) {
+                throw new SamochodNieIstniejeException("Nie można zwrócić samochodu który nie jest wynajety");
+            }
 
             double cenaZaIloscDni = samochod.getTyp().getCenaBazowa() * liczbaDni;
             return Optional.of(cenaZaIloscDni);
@@ -97,7 +108,9 @@ public class Wypozyczalnia {
         Optional<Samochod> optSamochod = znajdzSamochod(rejestracja);
         if (optSamochod.isPresent()) {
             Samochod samochod = optSamochod.get();
-
+            if(samochod.getStatus() != StatusSamochodu.DOSTEPNY){
+                throw new SamochodNieIstniejeException("Samochod o wpisanej rejestracji nie istnieje");
+            }
             samochod.setStatus(StatusSamochodu.WYNAJETY);
 
             String generowanyIdentyfikator = "WYNAJEM-" + LICZBIK_WYNAJMOW;

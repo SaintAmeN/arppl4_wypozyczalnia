@@ -1,8 +1,6 @@
 package pl.sda.arp4.rental.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
@@ -16,5 +14,6 @@ public class Samochod {
     private TypNadwozia typ;
 
     // dla sprawdzenia dostępności
+    @EqualsAndHashCode.Exclude
     private StatusSamochodu status;
 }
